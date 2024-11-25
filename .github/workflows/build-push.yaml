@@ -3,8 +3,16 @@ name: build & push
 on:
   schedule:
     - cron: '0 4 * * *'
-  push:
   workflow_dispatch:
+    inputs:
+      app:
+        description: Name of app to build (must match a dir in apps/)
+        required: false
+        type: string
+      version:
+        description: Version of app to build
+        required: false
+        type: string
 
 jobs:
   find-apps:
@@ -18,7 +26,12 @@ jobs:
       -
         name: list apps
         id: apps
-        run: echo "apps=$(ls ./apps | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
+        run: |
+          if [ -z "${{ inputs.app }} ]; then
+            echo "apps=$(ls ./apps | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
+          else
+            echo "apps=${{ inputs.app }}" >> ${GITHUB_OUTPUT}
+          fi
 
   build-push:
     runs-on: ubuntu-latest
@@ -35,7 +48,12 @@ jobs:
         uses: actions/checkout@v4
       -
         name: set version
-        run: echo "VERSION=$(source ./apps/${{ matrix.app }}/latest.sh)" >> $GITHUB_ENV
+        run: |
+          if [ -z "${{ inputs.version }} ]; then
+            echo "VERSION=${{ inputs.version }}" >> ${GITHUB_OUTPUT}
+          else
+            echo "VERSION=$(source ./apps/${{ matrix.app }}/latest.sh)" >> $GITHUB_ENV
+          fi
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
