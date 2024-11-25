@@ -1,0 +1,42 @@
+name: build & push
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  push:
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      -
+        name: checkout
+        uses: actions/checkout@v4
+      -
+        name: set version
+        run: echo "VERSION=$(source ./apps/jellyfin-rocm/latest.sh)" >> $GITHUB_ENV
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          build-args: |
+            VERSION
+          context: ./apps/jellyfin-rocm
+          tags: ghcr.io/luispflamminger/jellyfin-rocm:${{ env.VERSION }}
+
