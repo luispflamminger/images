@@ -56,9 +56,8 @@ jobs:
             echo "VERSION=$(source ./apps/${{ matrix.app }}/latest.sh)" >> $GITHUB_ENV
           else
             echo "using provided version"
-            echo "VERSION=${{ inputs.version }}" >> ${GITHUB_OUTPUT}
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
           fi
-          cat ${GITHUB_OUTPUT}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
