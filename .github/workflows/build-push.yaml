@@ -10,17 +10,15 @@ jobs:
   find-apps:
     runs-on: ubuntu-latest
     outputs:
-      apps: ${{ steps.list-apps.outputs.folders }}
+      apps: ${{ steps.apps.outputs.apps }}
     steps:
       -
         name: checkout
         uses: actions/checkout@v4
       -
         name: list apps
-        id: list-apps
-        uses: philips-labs/list-folder-action@v2.1
-        with:
-          path: ./apps
+        id: apps
+        run: echo "apps=$(ls -d apps/*/ | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
 
   build-push:
     runs-on: ubuntu-latest
