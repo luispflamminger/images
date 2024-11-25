@@ -18,7 +18,7 @@ jobs:
       -
         name: list apps
         id: list-apps
-        uses: philips-labs/list-folder-action@v2
+        uses: philips-labs/list-folder-action@v2.1
         with:
           path: ./apps
 
