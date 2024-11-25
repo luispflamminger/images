@@ -1,3 +1,5 @@
+LABEL org.opencontainers.image.source="https://github.com/jellyfin/jellyfin"
+
 ARG VERSION=latest
 
 FROM jellyfin/jellyfin:${VERSION}
