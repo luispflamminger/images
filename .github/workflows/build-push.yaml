@@ -18,7 +18,7 @@ jobs:
       -
         name: list apps
         id: apps
-        run: echo "apps=$(ls -d ./apps | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
+        run: echo "apps=$(ls ./apps | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
 
   build-push:
     runs-on: ubuntu-latest
