@@ -7,18 +7,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker:
+  find-apps:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.list-apps.outputs.folders }}
+    steps:
+      -
+        name: checkout
+        uses: actions/checkout@v4
+      -
+        name: list apps
+        id: list-apps
+        uses: philips-labs/list-folders-action@v2
+        with:
+          path: ./apps
+
+  build-push:
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
+    needs: find-apps
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.find-apps.outputs.apps) }}
     steps:
       -
         name: checkout
         uses: actions/checkout@v4
       -
         name: set version
-        run: echo "VERSION=$(source ./apps/jellyfin-rocm/latest.sh)" >> $GITHUB_ENV
+        run: echo "VERSION=$(source ./apps/${{ matrix.app }}/latest.sh)" >> $GITHUB_ENV
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -39,6 +58,8 @@ jobs:
           push: true
           build-args: |
             VERSION
-          context: ./apps/jellyfin-rocm
-          tags: ghcr.io/luispflamminger/jellyfin-rocm:${{ env.VERSION }}
+          context: ./apps/${{ matrix.app }}
+          tags: |
+            ghcr.io/luispflamminger/${{ matrix.app }}:${{ env.VERSION }}
+            ghcr.io/luispflamminger/${{ matrix.app }}:latest
 
