@@ -50,9 +50,9 @@ jobs:
         name: set version
         run: |
           if [ -z "${{ inputs.version }}" ]; then
-            echo "VERSION=${{ inputs.version }}" >> ${GITHUB_OUTPUT}
-          else
             echo "VERSION=$(source ./apps/${{ matrix.app }}/latest.sh)" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ inputs.version }}" >> ${GITHUB_OUTPUT}
           fi
       -
         name: Set up QEMU
