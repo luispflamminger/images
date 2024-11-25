@@ -30,7 +30,7 @@ jobs:
           if [ -z "${{ inputs.app }}" ]; then
             echo "apps=$(ls ./apps | jq --raw-input --slurp --compact-output 'split("\n")[:-1]')" >> ${GITHUB_OUTPUT}
           else
-            echo "apps=${{ inputs.app }}" >> ${GITHUB_OUTPUT}
+            echo "apps=[\"${{ inputs.app }}\"]" >> ${GITHUB_OUTPUT}
           fi
 
   build-push:
